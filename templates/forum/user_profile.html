@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }} 的资料 - 创业成长论坛{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <!-- User Info Card -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" class="rounded-circle mb-3" width="100" height="100" alt="头像">
+                {% else %}
+                    <div class="bg-secondary rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                        <i class="bi bi-person h1 text-white"></i>
+                    </div>
+                {% endif %}
+                
+                <h5 class="card-title">{{ profile_user.username }}</h5>
+                
+                {% if profile.bio %}
+                    <p class="text-muted">{{ profile.bio }}</p>
+                {% endif %}
+                
+                <div class="row text-center mt-3">
+                    <div class="col-4">
+                        <strong class="text-primary">{{ profile.post_count }}</strong>
+                        <br><small class="text-muted">帖子</small>
+                    </div>
+                    <div class="col-4">
+                        <strong class="text-success">{{ profile.reputation }}</strong>
+                        <br><small class="text-muted">声望</small>
+                    </div>
+                    <div class="col-4">
+                        <strong class="text-info">{{ recent_topics|length }}</strong>
+                        <br><small class="text-muted">主题</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Details -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle"></i> 详细信息
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if profile.location %}
+                    <p class="mb-2">
+                        <i class="bi bi-geo-alt"></i> <strong>所在地：</strong>{{ profile.location }}
+                    </p>
+                {% endif %}
+                
+                {% if profile.website %}
+                    <p class="mb-2">
+                        <i class="bi bi-globe"></i> <strong>网站：</strong>
+                        <a href="{{ profile.website }}" target="_blank" class="text-decoration-none">{{ profile.website }}</a>
+                    </p>
+                {% endif %}
+                
+                <p class="mb-2">
+                    <i class="bi bi-calendar-plus"></i> <strong>加入时间：</strong>{{ profile_user.date_joined|date:"Y-m-d" }}
+                </p>
+                
+                <p class="mb-0">
+                    <i class="bi bi-clock"></i> <strong>最后在线：</strong>{{ profile.last_seen|timesince }}前
+                </p>
+                
+                {% if profile.signature %}
+                    <hr>
+                    <p class="mb-0 fst-italic text-muted">{{ profile.signature }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <!-- Recent Topics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-chat-square-text"></i> 最近发表的主题
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if recent_topics %}
+                    {% for topic in recent_topics %}
+                        <div class="topic-item p-2 border-bottom">
+                            <h6 class="mb-1">
+                                <a href="{% url 'forum:topic_detail' topic.slug %}" class="text-decoration-none">
+                                    {{ topic.title }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">
+                                <span class="badge bg-primary">{{ topic.get_topic_type_display }}</span>
+                                <span class="badge bg-outline-secondary">{{ topic.category.name }}</span>
+                                <i class="bi bi-clock ms-2"></i> {{ topic.created_at|timesince }}前
+                                <i class="bi bi-eye ms-2"></i> {{ topic.views }} 次浏览
+                            </small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center py-3">该用户还没有发表过主题</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Recent Posts -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-chat-left"></i> 最近的回复
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if recent_posts %}
+                    {% for post in recent_posts %}
+                        <div class="post-item p-2 border-bottom">
+                            <h6 class="mb-1">
+                                <a href="{{ post.get_absolute_url }}" class="text-decoration-none">
+                                    回复：{{ post.topic.title }}
+                                </a>
+                            </h6>
+                            <p class="text-muted mb-1">{{ post.content|truncatewords:20 }}</p>
+                            <small class="text-muted">
+                                <span class="badge bg-outline-secondary">{{ post.topic.category.name }}</span>
+                                <i class="bi bi-clock ms-2"></i> {{ post.created_at|timesince }}前
+                            </small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted text-center py-3">该用户还没有发表过回复</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

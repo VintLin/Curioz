@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}欢迎回来 - 创业成长论坛{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center min-vh-75 align-items-center">
+    <div class="col-md-5 col-lg-4">
+        <div class="card border-0 shadow-lg">
+            <div class="card-body p-5">
+                <!-- 标题区域 -->
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle" 
+                             style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                            <i class="bi bi-box-arrow-in-right text-white fs-3"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-2">欢迎回来</h3>
+                    <p class="text-muted small">继续您的创业成长之旅</p>
+                </div>
+
+                <!-- 登录表单 -->
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">用户名</label>
+                        <input type="text" class="form-control" name="username" placeholder="请输入用户名" required>
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">密码</label>
+                        <input type="password" class="form-control" name="password" placeholder="请输入密码" required>
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg fw-semibold py-3" 
+                                style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border: none;">
+                            立即登录
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- 注册和忘记密码链接 -->
+                <div class="text-center">
+                    <p class="text-muted small mb-2">
+                        还没有账户？
+                        <a href="{% url 'accounts:register' %}" class="text-decoration-none fw-semibold" 
+                           style="color: var(--primary-color);">立即注册</a>
+                    </p>
+                    <p class="text-muted small mb-0">
+                        <a href="#" class="text-decoration-none" style="color: var(--text-secondary);">忘记密码？</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
+}
+
+.card {
+    border-radius: 16px;
+}
+</style>
+{% endblock %}

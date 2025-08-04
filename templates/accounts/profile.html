@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block title %}个人资料管理 - 创业成长论坛{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-gear"></i> 个人资料管理
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">用户名</label>
+                                <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                                <div class="form-text">用户名无法修改</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">邮箱</label>
+                                <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                                <div class="form-text">邮箱无法修改</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.bio.id_for_label }}" class="form-label">个人简介</label>
+                        {{ form.bio }}
+                        {% if form.bio.errors %}
+                            <div class="text-danger">{{ form.bio.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">所在地</label>
+                                {{ form.location }}
+                                {% if form.location.errors %}
+                                    <div class="text-danger">{{ form.location.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.website.id_for_label }}" class="form-label">个人网站</label>
+                                {{ form.website }}
+                                {% if form.website.errors %}
+                                    <div class="text-danger">{{ form.website.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.avatar.id_for_label }}" class="form-label">头像</label>
+                        {% if profile.avatar %}
+                            <div class="mb-2">
+                                <img src="{{ profile.avatar.url }}" class="rounded" width="100" height="100" alt="当前头像">
+                            </div>
+                        {% endif %}
+                        {{ form.avatar }}
+                        {% if form.avatar.errors %}
+                            <div class="text-danger">{{ form.avatar.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">支持 JPG、PNG 格式，建议尺寸 200x200 像素</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.signature.id_for_label }}" class="form-label">个性签名</label>
+                        {{ form.signature }}
+                        {% if form.signature.errors %}
+                            <div class="text-danger">{{ form.signature.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'forum:index' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> 返回首页
+                        </a>
+                        <div>
+                            <a href="{% url 'accounts:password_change' %}" class="btn btn-outline-primary me-2">
+                                <i class="bi bi-key"></i> 修改密码
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> 保存修改
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- User Statistics -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="bi bi-bar-chart"></i> 我的统计
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <strong class="text-primary h4">{{ profile.post_count }}</strong>
+                        <br><small class="text-muted">发帖数</small>
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-success h4">{{ profile.reputation }}</strong>
+                        <br><small class="text-muted">声望值</small>
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-info h4">{{ user.date_joined|timesince }}</strong>
+                        <br><small class="text-muted">加入时间</small>
+                    </div>
+                    <div class="col-md-3">
+                        <strong class="text-warning h4">{{ profile.last_seen|timesince }}</strong>
+                        <br><small class="text-muted">最后活跃</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

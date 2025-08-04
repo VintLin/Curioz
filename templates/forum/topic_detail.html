@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ topic.title }} - 创业成长论坛{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Topic Header -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1 class="h3 mb-2">
+                            {% if topic.is_pinned %}
+                                <i class="bi bi-pin-fill text-warning" title="置顶"></i>
+                            {% endif %}
+                            {% if topic.is_locked %}
+                                <i class="bi bi-lock-fill text-muted" title="已锁定"></i>
+                            {% endif %}
+                            {{ topic.title }}
+                        </h1>
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ topic.get_topic_type_display }}</span>
+                            <span class="badge bg-outline-secondary">{{ topic.category.name }}</span>
+                            {% if topic.is_pinned %}
+                                <span class="badge bg-warning">置顶</span>
+                            {% endif %}
+                            {% if topic.is_locked %}
+                                <span class="badge bg-secondary">已锁定</span>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i> {{ topic.author.username }}
+                            <i class="bi bi-clock ms-2"></i> {{ topic.created_at|date:"Y-m-d H:i" }}
+                            <i class="bi bi-eye ms-2"></i> {{ topic.views }} 次浏览
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        {% if user.is_authenticated and not topic.is_locked %}
+                            <a href="#reply-form" class="btn btn-primary">
+                                <i class="bi bi-reply"></i> 回复
+                            </a>
+                        {% endif %}
+                        {% if user.is_authenticated and user == topic.author or user.is_staff %}
+                            <a href="{% url 'forum:delete_topic' topic.slug %}" class="btn btn-outline-danger">
+                                <i class="bi bi-trash"></i> 删除
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Posts -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-chat-square-text"></i> 帖子内容
+                    <span class="badge bg-secondary ms-2">{{ posts.paginator.count }} 条回复</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% for post in posts %}
+                    <div class="post-item p-4 border-bottom" id="post-{{ post.id }}">
+                        <div class="row">
+                            <div class="col-md-2 text-center">
+                                <!-- User Info -->
+                                <div class="user-info">
+                                    {% if post.author.profile.avatar %}
+                                        <img src="{{ post.author.profile.avatar.url }}" class="user-avatar mb-2" alt="头像">
+                                    {% else %}
+                                        <div class="user-avatar bg-secondary d-flex align-items-center justify-content-center mb-2">
+                                            <i class="bi bi-person text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                    <h6 class="mb-1">
+                                        <a href="{% url 'forum:user_profile' post.author.username %}" class="text-decoration-none">
+                                            {{ post.author.username }}
+                                        </a>
+                                    </h6>
+                                    {% if post.author.profile %}
+                                        <small class="text-muted">{{ post.author.profile.location|default:"" }}</small>
+                                        <br><small class="text-muted">{{ post.author.profile.post_count }} 帖</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <!-- Post Content -->
+                                <div class="post-content">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i> {{ post.created_at|date:"Y-m-d H:i" }}
+                                            {% if post.updated_at != post.created_at %}
+                                                <span class="ms-2">(已编辑)</span>
+                                            {% endif %}
+                                        </small>
+                                        <small class="text-muted">#{{ forloop.counter }}</small>
+                                    </div>
+                                    <div class="post-text">
+                                        {{ post.content|linebreaks }}
+                                    </div>
+                                    {% if post.author.profile.signature %}
+                                        <hr>
+                                        <small class="text-muted fst-italic">{{ post.author.profile.signature }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-chat-square h1"></i>
+                        <p class="mt-2">暂无回复</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if posts.has_other_pages %}
+            <nav aria-label="帖子分页" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if posts.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1">首页</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ posts.previous_page_number }}">上一页</a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in posts.paginator.page_range %}
+                        {% if posts.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ posts.next_page_number }}">下一页</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ posts.paginator.num_pages }}">末页</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+
+        <!-- Reply Form -->
+        {% if user.is_authenticated and not topic.is_locked %}
+            <div class="card mt-4" id="reply-form">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="bi bi-reply"></i> 回复主题
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'forum:reply_topic' topic.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ reply_form.content }}
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">支持换行和基本格式</small>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send"></i> 发表回复
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% elif not user.is_authenticated %}
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <p class="mb-3">请登录后参与讨论</p>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right"></i> 登录
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary ms-2">
+                        <i class="bi bi-person-plus"></i> 注册
+                    </a>
+                </div>
+            </div>
+        {% elif topic.is_locked %}
+            <div class="alert alert-warning mt-4">
+                <i class="bi bi-lock-fill"></i> 该主题已被锁定，无法回复。
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mt-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{% url 'forum:index' %}">首页</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="{% url 'forum:category_detail' topic.category.slug %}">{{ topic.category.name }}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {{ topic.title|truncatechars:30 }}
+        </li>
+    </ol>
+</nav>
+{% endblock %}

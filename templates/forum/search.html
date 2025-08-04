@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}搜索{% if query %} - {{ query }}{% endif %} - 创业成长论坛{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="mb-3">
+                    <i class="bi bi-search"></i> 搜索论坛
+                </h4>
+                <form method="get" class="row g-3">
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" name="q" value="{{ query }}" 
+                               placeholder="搜索主题和帖子内容..." required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> 搜索
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        {% if query %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        搜索结果：{{ query }}
+                        {% if results %}
+                            <span class="badge bg-secondary ms-2">{{ results|length }} 个结果</span>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if results %}
+                        {% for result in results %}
+                            <div class="search-result-item p-3 border-bottom">
+                                {% if result.title %}
+                                    <!-- Topic Result -->
+                                    <h6 class="mb-2">
+                                        <a href="{% url 'forum:topic_detail' result.slug %}" class="text-decoration-none">
+                                            {{ result.title }}
+                                        </a>
+                                        <span class="badge bg-primary ms-2">主题</span>
+                                        <span class="badge bg-outline-secondary">{{ result.category.name }}</span>
+                                    </h6>
+                                    <p class="text-muted mb-2">{{ result.content|truncatewords:30 }}</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-person"></i> {{ result.author.username }}
+                                        <i class="bi bi-clock ms-2"></i> {{ result.created_at|timesince }}前
+                                        <i class="bi bi-eye ms-2"></i> {{ result.views }} 次浏览
+                                    </small>
+                                {% else %}
+                                    <!-- Post Result -->
+                                    <h6 class="mb-2">
+                                        <a href="{{ result.get_absolute_url }}" class="text-decoration-none">
+                                            回复：{{ result.topic.title }}
+                                        </a>
+                                        <span class="badge bg-success ms-2">回复</span>
+                                        <span class="badge bg-outline-secondary">{{ result.topic.category.name }}</span>
+                                    </h6>
+                                    <p class="text-muted mb-2">{{ result.content|truncatewords:30 }}</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-person"></i> {{ result.author.username }}
+                                        <i class="bi bi-clock ms-2"></i> {{ result.created_at|timesince }}前
+                                    </small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-search h1 text-muted"></i>
+                            <p class="text-muted mt-3">没有找到相关内容</p>
+                            <p class="text-muted">尝试使用不同的关键词或者浏览论坛分类</p>
+                            <a href="{% url 'forum:index' %}" class="btn btn-primary">
+                                <i class="bi bi-house"></i> 返回首页
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Search Tips -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-3">搜索提示</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>搜索技巧：</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success"></i> 使用关键词搜索</li>
+                                <li><i class="bi bi-check-circle text-success"></i> 支持中文和英文</li>
+                                <li><i class="bi bi-check-circle text-success"></i> 搜索主题标题和内容</li>
+                                <li><i class="bi bi-check-circle text-success"></i> 搜索帖子回复内容</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>热门搜索：</h6>
+                            <div>
+                                <a href="?q=创业" class="badge bg-light text-dark text-decoration-none me-1">创业</a>
+                                <a href="?q=成长" class="badge bg-light text-dark text-decoration-none me-1">成长</a>
+                                <a href="?q=学习" class="badge bg-light text-dark text-decoration-none me-1">学习</a>
+                                <a href="?q=分享" class="badge bg-light text-dark text-decoration-none me-1">分享</a>
+                                <a href="?q=经验" class="badge bg-light text-dark text-decoration-none me-1">经验</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

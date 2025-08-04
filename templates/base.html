@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}创业成长论坛{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #f9fafb;
+            --border-light: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: white !important;
+            border-bottom: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.25rem;
+        }
+        
+        .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .btn-success {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            font-weight: 500;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: var(--shadow-sm);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        
+        .topic-card {
+            background: white;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .topic-card:hover {
+            border-left-color: var(--secondary-color);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .category-card {
+            background: white;
+            border: 1px solid var(--border-light);
+        }
+        
+        .category-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .category-card .card-title a {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .category-card .card-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-tabs {
+            border-bottom: 2px solid var(--border-light);
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .post-content {
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+        
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.375rem 0.75rem;
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow-lg);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            z-index: 1050;
+        }
+        
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--bg-light);
+            color: var(--primary-color);
+        }
+        
+        .dropdown {
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .dropdown.show {
+            z-index: 1051;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, var(--text-primary) 0%, #374151 100%);
+            color: white;
+            margin-top: auto;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-light);
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'forum:index' %}">
+                <i class="bi bi-chat-square-text"></i> 创业成长论坛
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'forum:index' %}">
+                            <i class="bi bi-house"></i> 首页
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="startupDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-rocket"></i> 创业板块
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'general-business' %}">
+                                <i class="bi bi-chat-square"></i> 创业讨论
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'marketing-strategy' %}">
+                                <i class="bi bi-megaphone"></i> 营销策略
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'side-hustles' %}">
+                                <i class="bi bi-briefcase"></i> 副业兼职
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'execution' %}">
+                                <i class="bi bi-graph-up"></i> 执行进展
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'ideas-feedback' %}">
+                                <i class="bi bi-lightbulb"></i> 想法反馈
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'product-development' %}">
+                                <i class="bi bi-gear"></i> 产品开发
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'business-models' %}">
+                                <i class="bi bi-diagram-3"></i> 商业模式
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'legal-tax' %}">
+                                <i class="bi bi-shield-check"></i> 法律税务
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="growthDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-check"></i> 个人成长
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'relationships' %}">
+                                <i class="bi bi-people"></i> 人际关系
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'growth-planning' %}">
+                                <i class="bi bi-map"></i> 成长规划
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'time-management' %}">
+                                <i class="bi bi-clock-history"></i> 时间管理
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'mental-growth' %}">
+                                <i class="bi bi-heart"></i> 心理成长
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'skill-development' %}">
+                                <i class="bi bi-tools"></i> 技能提升
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'mindset' %}">
+                                <i class="bi bi-lightbulb-fill"></i> 思维模式
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'forum:category_detail' 'book-sharing' %}">
+                                <i class="bi bi-book"></i> 读书分享
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'forum:search' %}">
+                            <i class="bi bi-search"></i> 搜索
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                    <i class="bi bi-person"></i> 个人资料
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'forum:user_profile' user.username %}">
+                                    <i class="bi bi-eye"></i> 查看资料
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i> 退出登录
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> 登录
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:register' %}">
+                                <i class="bi bi-person-plus"></i> 注册
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container my-4" style="flex: 1;">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>创业成长论坛</h5>
+                    <p class="mb-0">专注于创业成长、经验分享和问题讨论的社区论坛</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <h6 class="mb-2">
+                        <i class="bi bi-chat-dots me-1"></i>
+                        问题反馈
+                    </h6>
+                    <p class="mb-1">
+                        <i class="bi bi-wechat text-success me-1"></i>
+                        添加微信：<strong>349972023</strong>
+                    </p>
+                    <small class="text-light opacity-75">欢迎反馈问题和建议</small>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-0">© 2024 创业成长论坛</p>
+                    <small class="opacity-75">保留所有权利</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
