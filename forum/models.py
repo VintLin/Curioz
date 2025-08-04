@@ -50,6 +50,7 @@ class Topic(models.Model):
     title = models.CharField('标题', max_length=200)
     slug = models.SlugField('URL标识', unique=True)
     content = models.TextField('内容')
+    content_html = models.TextField('HTML内容', blank=True)
     topic_type = models.CharField('主题类型', max_length=20, choices=TOPIC_TYPES, default='discussion')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='topics', verbose_name='分类')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='topics', verbose_name='作者')
@@ -72,6 +73,13 @@ class Topic(models.Model):
     
     def get_absolute_url(self):
         return reverse('forum:topic_detail', kwargs={'slug': self.slug})
+        
+    def save(self, *args, **kwargs):
+        # 处理Markdown
+        from .utils import convert_markdown_to_html
+        if self.content:
+            self.content_html = convert_markdown_to_html(self.content)
+        super().save(*args, **kwargs)
     
     @property
     def reply_count(self):
@@ -91,6 +99,7 @@ class Post(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='posts', verbose_name='主题')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts', verbose_name='作者')
     content = models.TextField('内容')
+    content_html = models.TextField('HTML内容', blank=True)
     is_active = models.BooleanField('是否启用', default=True)
     created_at = models.DateTimeField('创建时间', auto_now_add=True)
     updated_at = models.DateTimeField('更新时间', auto_now=True)
@@ -105,6 +114,13 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         return f"{self.topic.get_absolute_url()}#post-{self.id}"
+        
+    def save(self, *args, **kwargs):
+        # 处理Markdown
+        from .utils import convert_markdown_to_html
+        if self.content:
+            self.content_html = convert_markdown_to_html(self.content)
+        super().save(*args, **kwargs)
 
 
 class UserProfile(models.Model):

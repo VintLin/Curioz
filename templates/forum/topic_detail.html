@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load markdown_extras %}
 
 {% block title %}{{ topic.title }} - 创业成长论坛{% endblock %}
 
@@ -97,7 +98,11 @@
                                         <small class="text-muted">#{{ forloop.counter }}</small>
                                     </div>
                                     <div class="post-text">
-                                        {{ post.content|linebreaks }}
+                                        {% if post.content_html %}
+                                            {{ post.content_html|safe }}
+                                        {% else %}
+                                            {{ post.content|markdown|safe }}
+                                        {% endif %}
                                     </div>
                                     {% if post.author.profile.signature %}
                                         <hr>
@@ -168,7 +173,7 @@
                             {{ reply_form.content }}
                         </div>
                         <div class="d-flex justify-content-between">
-                            <small class="text-muted">支持换行和基本格式</small>
+                            <small class="text-muted">支持Markdown格式，包括**粗体**、*斜体*、`代码`等</small>
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-send"></i> 发表回复
                             </button>
@@ -210,4 +215,39 @@
         </li>
     </ol>
 </nav>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化回复表单的Markdown编辑器
+        const replyTextarea = document.querySelector('#reply-form textarea');
+        if (replyTextarea) {
+            const replyMDE = new EasyMDE({
+                element: replyTextarea,
+                spellChecker: false,
+                autosave: {
+                    enabled: true,
+                    delay: 1000,
+                    uniqueId: "forum-reply-content-{{ topic.id }}"
+                },
+                toolbar: [
+                    "bold", "italic", "heading", "|", 
+                    "quote", "code", "unordered-list", "ordered-list", "|",
+                    "link", "image", "|",
+                    "preview", "fullscreen", "|",
+                    "guide"
+                ],
+                placeholder: "请输入回复内容...",
+                status: false,
+                minHeight: "200px"
+            });
+        }
+    });
+</script>
 {% endblock %}
